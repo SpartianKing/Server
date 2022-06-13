@@ -15,6 +15,38 @@ fi
     # This would be the case if no network connection is non-existent
     ip="127.0.0.1"
   fi
+# install Screen If its not installed
+
+if [ $(dpkg-query -W -f='${Status}' screen 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+  dialog --infobox "Installing screen..." 3 34 ;
+  if [[ $updated == 0 ]]; then
+    apt-get update > /dev/null 2>&1
+    updated=1
+  fi
+  apt-get -y install screen > /dev/null 2>&1
+fi
+
+# Install WGET
+
+if [ $(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+  dialog --infobox "Installing wget..." 3 34 ;
+  if [[ $updated == 0 ]]; then
+    apt-get update > /dev/null 2>&1
+    updated=1
+  fi
+  apt-get -y install wget > /dev/null 2>&1
+fi
+
+#Install Cron
+if [ $(dpkg-query -W -f='${Status}' cron 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+  dialog --infobox "Installing cron..." 3 34 ;
+  if [[ $updated == 0 ]]; then
+    apt-get update > /dev/null 2>&1
+    updated=1
+  fi
+  apt-get -y install cron > /dev/null 2>&1
+fi
+
 #Lets Install Minecraft
 dialog --title "End-User License Agreement"  --yesno "In order to proceed, you must read and accept the EULA at https://account.mojang.com/documents/minecraft_eula\n\nDo you accept the EULA?" 8 60
 
@@ -22,6 +54,8 @@ dialog --title "End-User License Agreement"  --yesno "In order to proceed, you m
   0)
    eula="accepted"
    eula_stamp=$(date)
+   eula_stamp=$(time)
+   eula_stamp=$(user)
    ;;
   1)
    echo
