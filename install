@@ -4,17 +4,16 @@ if [[ $EUID -ne 0 ]]; then
   echo "ERROR: This script must be run as root" 2>&1
   exit 1
 fi
+# Install WGET
 
- interface=""
-  host=github.com
-  host_ip=$(getent ahosts "$host" | awk '{print $1; exit}')
-  interface=`ip route get "$host_ip" | grep -Po '(?<=(dev )).*(?= src| proto)' | cut -f 1 -d " "`
-  ip=$(/sbin/ip -f inet addr show $interface | grep -Po 'inet \K[\d.]+' | head -n 1)
-  if [[ $ip == "" ]]; then
-    # Never reply with a blank string - instead, use localhost if no IP is found
-    # This would be the case if no network connection is non-existent
-    ip="127.0.0.1"
+if [ $(dpkg-query -W -f='${Status}' curl 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+  dialog --infobox "Installing curl..." 3 34 ;
+  if [[ $updated == 0 ]]; then
+    apt-get update > /dev/null 2>&1
+    updated=1
   fi
+  apt-get -y install curl > /dev/null 2>&1
+fi
 # Install dialog
 
 if [ $(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
