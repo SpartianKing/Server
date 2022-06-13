@@ -94,6 +94,12 @@ dialog --msgbox "Minecraft server runs on $ip Localhost." 10 25
 
 dialog --msgbox "Minecraft Server runs on ${myip} Public host." 10 25
 
+dialog --msgbox "This Installer Will restart twice Automatically." 10 25
+
+dialog --msgbox "This is so that I can install all files the first time" 10 25
+
+dialog --msgbox "then I can edit the config and other files the second time." 10 25
+
 #Lets Install Minecraft
 screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
 
