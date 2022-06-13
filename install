@@ -54,14 +54,9 @@ if [ $(dpkg-query -W -f='${Status}' cron 2>/dev/null | grep -c "ok installed") -
   fi
   apt-get -y install cron > /dev/null 2>&1
 fi
+#welcome
+dialog --msgbox "Thank You for installing Minecraft" 10 25
 
-#Lets Install Minecraft
-screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
-
-sed -i "s/eula=false/eula=true/g" eula.txt
-
-#####################################################
-#
 # Tweaking Server Configs
 #####################################################
 
@@ -89,8 +84,25 @@ sed -i "s/eula=false/eula=true/g" eula.txt
       fi
   # Set motd
       # Change the value if it exists
-      /bin/sed -i '/motd=/c\Dreamcraft Network's SMP' server.properties
-      # Add it if it doesn't exist
-      if ! grep -q "motd=A Minecraft Server" server.properties; then
-        echo "motd=Dreamcraft Network's SMP" >> server.properties
-      fi
+      /bin/sed -i '/motd=/c\Dreamcraft Networks SMP' server.properties
+
+dialog --msgbox "Minecraft server runs on $ip" 10 25
+
+#Lets Install Minecraft
+screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
+
+sed -i "s/eula=false/eula=true/g" eula.txt
+
+#####################################################
+
+dialog --msgbox "Thank You for installing Minecraft" 10 25
+
+dialog --msgbox "Subscribe to Dreamcraft Network's Minecraft Youtube Channel." 10 25
+
+dialog --msgbox "Check out minecraft.net if you have not obtained Minecraft." 10 25
+
+dialog --msgbox "Documentation is here @ https://bit.ly/3QlIzsf" 10 25
+
+dialog --msgbox "Join The Discord here @ https://dsc.gg/dreamcraft" 10 25
+
+clear
