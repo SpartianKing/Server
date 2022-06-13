@@ -85,8 +85,12 @@ dialog --msgbox "Thank You for installing Minecraft" 10 25
   # Set motd
       # Change the value if it exists
       /bin/sed -i '/motd=/c\Dreamcraft Networks SMP' server.properties
+ 
+ myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 
-dialog --msgbox "Minecraft server runs on $ip" 10 25
+dialog --msgbox "Minecraft server runs on $ip Localhost." 10 25
+
+dialog --msgbox "Minecraft Server runs on ${myip} Public host." 10 25
 
 #Lets Install Minecraft
 screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
