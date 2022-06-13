@@ -88,6 +88,8 @@ dialog --msgbox "Thank You for installing Minecraft" 10 25
  
  myip="$(dig +short myip.opendns.com @resolver1.opendns.com)"
 
+ dialog --msgbox "Amount of RAM avaliable $(free -t -g)"  10 25
+
 dialog --msgbox "Minecraft server runs on $ip Localhost." 10 25
 
 dialog --msgbox "Minecraft Server runs on ${myip} Public host." 10 25
@@ -97,6 +99,9 @@ screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
 
 sed -i "s/eula=false/eula=true/g" eula.txt
 
+dialog --msgbox "EULA is now true. Please abide by Minecraft's EULA." 10 25
+
+screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
 #####################################################
 
 dialog --msgbox "Thank You for installing Minecraft" 10 25
