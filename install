@@ -15,8 +15,6 @@ fi
     # This would be the case if no network connection is non-existent
     ip="127.0.0.1"
   fi
-# install Screen If its not installed
-
 if [ $(dpkg-query -W -f='${Status}' screen 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
   dialog --infobox "Installing screen..." 3 34 ;
   if [[ $updated == 0 ]]; then
@@ -63,8 +61,6 @@ dialog --title "End-User License Agreement"  --yesno "In order to proceed, you m
    echo "EULA not accepted. You are not permitted to install this software."
    echo
    exit 1 ;;
-  esac
-
   memtotal=$(cat /proc/meminfo | grep MemTotal | awk '{print $2}') # Amount of memory in KB
 memavail=$(cat /proc/meminfo | grep MemAvailable | awk '{print $2}') # Amount of memory in KB
 memvariance=$(($memtotal - $memavail)) # Figure out how much memory is being used so we can make dynamic decisions for this board
@@ -130,7 +126,7 @@ ${gamememMIN##*()}MB - ${gamemem##*()}MB
 dialog --infobox "Creating scripts..." 3 34 ; sleep 1
 
    # Non-forge servers
-    echo "exec java ${cli_args} -Xms${gamememMIN}M -Xmx${gamemem}M -jar `server.jar` --nogui --pause" >> ${instdir}server
+    echo "exec java -Xms2048M -Xmx2048M -jar `server.jar` --nogui --pause" >> ${instdir}server
 
 chmod +x ${instdir}server
 
@@ -139,29 +135,6 @@ if [[ $eula == "accepted" ]]; then
 # $eula_stamp
 eula=true" > ${instdir}eula.txt
 fi
-
-# Create the safe reboot script
-echo '#!/bin/bash
-if [[ $EUID -ne 0 ]]; then
-  echo "ERROR: This script must be run as root" 2>&1
-  exit 1
-fi
-su - $user -c "'${instdir}'stop"
-echo
-echo "Rebooting."
-/sbin/reboot' > ${instdir}reboot
-chmod +x ${instdir}reboot
-
-# Create the safe stop script
-echo '#!/bin/bash
-user=$(whoami);
-if [[ $user != "'${user}'" ]]; then
-  if su - '$user' -c "/usr/bin/screen -list" | grep -q Server; then
-    printf "Stopping Minecraft Server. This will take time."
-    su - '$user' -c "screen -S Server -p 0 -X stuff \"stop^M\""
-    running=1
-  fi
-  chmod a+x ${instdir}stop
 
 #####################################################
 #
