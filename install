@@ -15,6 +15,16 @@ fi
     # This would be the case if no network connection is non-existent
     ip="127.0.0.1"
   fi
+# Install dialog
+
+if [ $(dpkg-query -W -f='${Status}' wget 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
+  dialog --infobox "Installing dialog" 3 34 ;
+  if [[ $updated == 0 ]]; then
+    apt-get update > /dev/null 2>&1
+    updated=1
+  fi
+  apt-install -y install dialog > /dev/null 2>&1
+fi  
 if [ $(dpkg-query -W -f='${Status}' screen 2>/dev/null | grep -c "ok installed") -eq 0 ]; then
   dialog --infobox "Installing screen..." 3 34 ;
   if [[ $updated == 0 ]]; then
@@ -52,35 +62,12 @@ dialog --title "End-User License Agreement"  --yesno "In order to proceed, you m
   0)
    eula="accepted"
    eula_stamp=$(date)
-   eula_stamp=$(time)
-   eula_stamp=$(user)
    ;;
   1)
-   echo
-   echo
-   echo "EULA not accepted. You are not permitted to install this software."
-   echo
-   exit 1 ;;
-dialog --title "Installer  --yesno "Automatically load the server on boot?" 6 60
-  case $? in
-  0)
-   cron=1
+    eula="accepted"
+    eula_stamp=$(date)
    ;;
-  1)
-   cron=0
-   ;;
-  esac
 
-Server User:
-$user
-###############################################
-# Create the scripts
-###############################################
-
-dialog --infobox "Creating scripts..." 3 34 ; sleep 1
-
-   # Non-forge servers
-    echo "exec java -Xms2048M -Xmx2048M -jar server.jar nogui pause" >>start
 
 chmod u+x start
 chmod +x start
@@ -118,50 +105,3 @@ fi
       if ! grep -q "view-distance=" server.properties; then
         echo "view-distance=7" >> server.properties
       fi
-
-###############################################
-# Install cronjob to auto-start server on boot
-###############################################
-
-# Dump current crontab to tmp file, empty if doesn't exist
-  crontab -u $user -l > /tmp/cron.tmp 2>/dev/null
-
-  if [[ "$cron" == "1" ]]; then
-    # Remove previous entry (in case it's an old version)
-    /bin/sed -i~ "\~${instdir}server~d" /tmp/cron.tmp
-    # Add server to auto-load at boot if doesn't already exist in crontab
-    if ! grep -q "minecraft/server" /tmp/cron.tmp; then
-      dialog --infobox "Enabling auto-run..." 3 34 ; sleep 1
-      printf "\n@reboot /usr/bin/screen -dmS Server $server/start > /dev/null 2>&1\n" >> /tmp/cron.tmp
-      cronupdate=1
-    fi
-  else
-    # Just in case it was previously enabled, disable it
-    # as this user requested not to auto-run
-    /bin/sed -i~ "\~/server~d" /tmp/cron.tmp
-    cronupdate=1
-  fi
-   # Import revised crontab
-  if [[ "$cronupdate" == "1" ]]
-  then
-    crontab -u $user /tmp/cron.tmp
-  fi
-
-  # Remove temp file
-  rm /tmp/cron.tmp
-
-# Start server
-
-
-  dialog --infobox "Starting the server..." 3 26 ;
-  su - $user -c "/usr/bin/screen -dmS Server server/start"
-
-clear
-  echo
-  echo
-  echo "Installation complete."
-  echo
-  echo "Minecraft server is now running on $ip"
-  echo
-  echo "Remember: World generation can take a few minutes. Be patient."
-  echo
