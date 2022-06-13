@@ -56,27 +56,9 @@ if [ $(dpkg-query -W -f='${Status}' cron 2>/dev/null | grep -c "ok installed") -
 fi
 
 #Lets Install Minecraft
-dialog --title "End-User License Agreement"  --yesno "In order to proceed, you must read and accept the EULA at https://account.mojang.com/documents/minecraft_eula\n\nDo you accept the EULA?" 8 60
+screen -S Minecraft-Server java -Xmx1024M -Xms1024M -jar server.jar nogui pause
 
-  case $? in
-  0)
-   eula="accepted"
-   eula_stamp=$(date)
-   ;;
-  1)
-    eula="accepted"
-    eula_stamp=$(date)
-   ;;
-
-
-chmod u+x start
-chmod +x start
-
-if [[ $eula == "accepted" ]]; then
-  echo "# https://account.mojang.com/documents/minecraft_eula ACCEPTED by user during installation
-# $eula_stamp
-eula=true" > ${instdir}eula.txt
-fi
+sed -i "s/eula=false/eula=true/g" eula.txt
 
 #####################################################
 #
@@ -104,4 +86,11 @@ fi
       # Add it if it doesn't exist
       if ! grep -q "view-distance=" server.properties; then
         echo "view-distance=7" >> server.properties
+      fi
+  # Set motd
+      # Change the value if it exists
+      /bin/sed -i '/motd=/c\Dreamcraft Network's SMP' server.properties
+      # Add it if it doesn't exist
+      if ! grep -q "motd=A Minecraft Server" server.properties; then
+        echo "motd=Dreamcraft Network's SMP" >> server.properties
       fi

@@ -1,1 +1,0 @@
-screen -S Lobby java -Xmx1024M -Xms1024M -jar paper-1.18.2-341.jar nogui
